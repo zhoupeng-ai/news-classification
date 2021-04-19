@@ -13,8 +13,7 @@ class TrainConfig:
                  lr_warmup=100,
                  batch_split=3,
                  weight_decay=0.01,
-                 num_labels=2,
-                 model_name='bert'):
+                 num_labels=2):
         """
         模型参数配置
         :param vocab_size:
@@ -37,23 +36,21 @@ class TrainConfig:
         self.batch_split = batch_split
         self.weight_decay = weight_decay
         self.log_dir = log_dir
-        self.model_name = model_name,
         self.num_labels = num_labels
 
     def reset_config(self,
                      my_cuda_is_enable=False,
                      vocab_size=10000,
-                     embed_size=500,
-                     batch_size=32,
-                     epoch_size=20,
+                     embed_size=50,
+                     batch_size=8,
+                     epoch_size=30,
                      lr=1e-2,
                      dropout=0.5,
                      eval_steps=2,
                      lr_warmup=100,
                      batch_split=3,
                      weight_decay=0.01,
-                     num_labels=2,
-                     model_name='word-avg'):
+                     num_labels=2):
         """
             本地无法支持复杂模型，降低参数量
         :param my_cuda_is_enable: default False
@@ -87,5 +84,4 @@ class TrainConfig:
             self.lr_warmup = lr_warmup
             self.batch_split = batch_split
             self.weight_decay = weight_decay
-            self.model_name = model_name
             self.num_labels = num_labels

@@ -1,6 +1,7 @@
 import torch
 from torch.utils.data import Dataset
 from util.common_util import (splice_path)
+import logging as logger
 
 
 def load_label_vocab(label_path):
@@ -14,7 +15,7 @@ class THUCNewsDataset(Dataset):
         THUCNews 新闻数据集的数据处理里类
     """
 
-    def __init__(self, args, path, tokenizer, logger, max_lengths=2048):
+    def __init__(self, args, path, tokenizer, max_lengths=200):
         """
             args: 数据加载的基本参数
             path: 数据的源路径
@@ -24,14 +25,12 @@ class THUCNewsDataset(Dataset):
 
         """
         super(THUCNewsDataset, self).__init__()
-        self.logger = logger
         self.tokenizer = tokenizer
         self.config = args
         self.max_lengths = max_lengths
         self.label_vocal = load_label_vocab(splice_path(args.root, args.label_path))
         self.path = splice_path(args.root, path)
         self.data = THUCNewsDataset.data_processor(path=self.path,
-                                                   logger=logger,
                                                    tokenizer=tokenizer,
                                                    label_vocal=self.label_vocal,
                                                    max_length=self.max_lengths)
@@ -44,7 +43,7 @@ class THUCNewsDataset(Dataset):
         return {'label': label_vocab, 'sent_token': sent_token, 'attention_mask': attention_mask}
 
     @staticmethod
-    def data_processor(path, logger, tokenizer, label_vocal, max_length):
+    def data_processor(path, tokenizer, label_vocal, max_length):
         dataset = []
         logger.info('reading data from {}'.format(path))
         with open(path, 'r', encoding="utf-8") as file:

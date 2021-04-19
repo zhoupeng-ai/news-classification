@@ -14,7 +14,7 @@ class BertTrainer:
         self.config = args
         self.device = get_device()
         self.model = model.to(self.device)
-        self.criterion = nn.CrossEntropyLoss()
+        self.criterion = nn.CrossEntropyLoss().to(self.device)
         basic_optim = Adam(self.model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
         self.optim = NoamOpt(self.model.config.hidden_size, 0.1, self.config.lr_warmup, basic_optim)
 
@@ -35,7 +35,7 @@ class BertTrainer:
 
     def _train(self, epoch):
         self.model.train()
-        logger.info(f"Epoch: {epoch}th")
+        logger.info("Epoch: {}th".format(epoch))
         loss, acc, step_count = 0., 0., 0
         total = len(self.train_loader)
 

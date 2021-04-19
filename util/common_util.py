@@ -45,37 +45,37 @@ def calculate_acc(pred_y, real_y):
     return acc
 
 
-def poly_lr_scheduler(epoch, num_epochs=300, power=0.9):
-    return (1 - epoch / num_epochs) ** power
+# def poly_lr_scheduler(epoch, num_epochs=300, power=0.9):
+#     return (1 - epoch / num_epochs) ** power
 
 
-def record_train_model(model_name, config, train_result):
-    import time
-    import json
-    import inspect
-    curr_day = time.strftime("%Y-%m-%d", time.localtime())
-    curr_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-    params = inspect.signature(config.__init__).parameters
-    model_process_params = {}
-    model_param = {}
-    train_params = {}
-    train_result = train_result if train_result else 0.
-    for param in params:
-        param = str(params[param]).split("=")
-        train_params[param[0]] = param[1]
-
-    model_param[model_name if model_name else "DEFAULT"] = {"train-best-acc": f'{train_result * 100:.4f}%',
-                                                            "train-params": train_params}
-
-    model_process_params[curr_day] = {"train-time": curr_time,
-                                      "train-model": model_param
-                                      }
-
-    model_process_params_json = json.dumps(model_process_params)
-
-    with open('./log/model_train_result.json', 'a') as file:
-        file.write(model_process_params_json)
-        file.write("\n")
+# def record_train_model(model_name, config, train_result):
+#     import time
+#     import json
+#     import inspect
+#     curr_day = time.strftime("%Y-%m-%d", time.localtime())
+#     curr_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+#     params = inspect.signature(config.__init__).parameters
+#     model_process_params = {}
+#     model_param = {}
+#     train_params = {}
+#     train_result = train_result if train_result else 0.
+#     for param in params:
+#         param = str(params[param]).split("=")
+#         train_params[param[0]] = param[1]
+#
+#     model_param[model_name if model_name else "DEFAULT"] = {"train-best-acc": f'{train_result * 100:.4f}%',
+#                                                             "train-params": train_params}
+#
+#     model_process_params[curr_day] = {"train-time": curr_time,
+#                                       "train-model": model_param
+#                                       }
+#
+#     model_process_params_json = json.dumps(model_process_params)
+#
+#     with open('./log/model_train_result.json', 'a') as file:
+#         file.write(model_process_params_json)
+#         file.write("\n")
 
 
 def splice_path(root, path):
@@ -84,39 +84,39 @@ def splice_path(root, path):
     return os.path.join(root, path)
 
 
-class EarlyStopping:
-    def __init__(self, patience=3):
-        self.patience = patience
-        self.counter = 0
-        self.best_loss = None
-        self.best_acc = None
-        self.early_stop = False
-        self.val_loss_min = np.Inf
-
-    def early_stopping_loss(self, val_loss):
-        score = -val_loss
-        if self.best_loss is None:
-            self.best_loss = score
-        elif score < self.best_loss:
-            self.counter += 1
-            logger.info(f'EarlyStopping counter: {self.counter} out of {self.patience}')
-            if self.counter >= self.patience:
-                self.early_stop = True
-        else:
-            self.best_loss = score
-            self.counter = 0
-        return self.early_stop
-
-    def early_stopping_acc(self, val_acc):
-        score = val_acc
-        if self.best_acc is None:
-            self.best_acc = score
-        elif score < self.best_acc:
-            self.counter += 1
-            logger.info(f'EarlyStopping counter: {self.counter} out of {self.patience}')
-            if self.counter >= self.patience:
-                self.early_stop = True
-        else:
-            self.best_acc = score
-            self.counter = 0
-        return self.early_stop
+# class EarlyStopping:
+#     def __init__(self, patience=3):
+#         self.patience = patience
+#         self.counter = 0
+#         self.best_loss = None
+#         self.best_acc = None
+#         self.early_stop = False
+#         self.val_loss_min = np.Inf
+#
+#     def early_stopping_loss(self, val_loss):
+#         score = -val_loss
+#         if self.best_loss is None:
+#             self.best_loss = score
+#         elif score < self.best_loss:
+#             self.counter += 1
+#             logger.info(f'EarlyStopping counter: {self.counter} out of {self.patience}')
+#             if self.counter >= self.patience:
+#                 self.early_stop = True
+#         else:
+#             self.best_loss = score
+#             self.counter = 0
+#         return self.early_stop
+#
+#     def early_stopping_acc(self, val_acc):
+#         score = val_acc
+#         if self.best_acc is None:
+#             self.best_acc = score
+#         elif score < self.best_acc:
+#             self.counter += 1
+#             logger.info(f'EarlyStopping counter: {self.counter} out of {self.patience}')
+#             if self.counter >= self.patience:
+#                 self.early_stop = True
+#         else:
+#             self.best_acc = score
+#             self.counter = 0
+#         return self.early_stop

@@ -21,5 +21,3 @@ class Logger(logging.Logger):
         logger.addHandler(handler)
         logger.addHandler(console)
 
-
-logger = Logger(log_path=f"./log/model_train_{today}.log")
