@@ -28,7 +28,7 @@ class THUCNewsDataset(Dataset):
         self.tokenizer = tokenizer
         self.config = args
         self.max_lengths = max_lengths
-        self.label_vocal = load_label_vocab(splice_path(args.root, args.label_path))
+        _, self.label_vocal, _ = load_label_vocab(splice_path(args.root, args.label_path))
         self.path = splice_path(args.root, path)
         self.data = THUCNewsDataset.data_processor(path=self.path,
                                                    tokenizer=tokenizer,
@@ -52,7 +52,7 @@ class THUCNewsDataset(Dataset):
             for line in lines:
                 label, text = line[0], line[1]
                 sent_token = tokenizer(text[:max_length])
-                dataset.append([int(label),
+                dataset.append([int(label)-1,
                                 sent_token['input_ids'],
                                 sent_token['attention_mask']])
 
@@ -67,14 +67,14 @@ class PadTHUCNewsSeqFn:
     def __call__(self, batch):
         res = dict()
         res['label'] = torch.tensor([i['label'] for i in batch]).long()
-        max_length = max([len(i['sent_token']) for i in batch])
+        max_len = max([len(i['sent_token']) for i in batch])
         res['sent_token'] = torch.tensor([i['sent_token'] +
-                                          [self.pad_idx] * (max_length - len(i['sent_token']))
+                                          [self.pad_idx] * (max_len - len(i['sent_token']))
                                           for i in batch]).long()
-        res['attention_mask'] = torch.tensor([i['attention_mask'] +
-                                              [self.pad_idx] * (max_length - len(i['attention_mask']))
-                                              for i in batch]).long()
 
+        res['attention_mask'] = torch.tensor([i['attention_mask'] +
+                                              [self.pad_idx] * (max_len - len(i['attention_mask']))
+                                              for i in batch]).long()
         return res
 
 

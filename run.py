@@ -18,7 +18,7 @@ init_seed(seed=2021)
 
 data_config = DataConfig()
 train_config = TrainConfig()
-train_config.reset_config(num_labels=14)
+train_config.reset_config(my_cuda_is_enable=False, num_labels=14)
 config, tokenizer, model = bert_processor(train_config)
 
 train_dataset = THUCNewsDataset(args=data_config, path=data_config.train_path, tokenizer=tokenizer)

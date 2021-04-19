@@ -16,30 +16,29 @@ class BertTrainer:
         self.model = model.to(self.device)
         self.criterion = nn.CrossEntropyLoss().to(self.device)
         basic_optim = Adam(self.model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
-        self.optim = NoamOpt(self.model.config.hidden_size, 0.1, self.config.lr_warmup, basic_optim)
-
-        self.train_loader = DataLoader(train_dataset,
-                                       shuffle=True,
-                                       batch_size=args.batch_size,
-                                       collate_fn=PadTHUCNewsSeqFn(tokenizer.pad_token_id))
-        self.validation_loader = DataLoader(validation_dataset,
-                                            shuffle=True,
-                                            batch_size=args.batch_size,
-                                            collate_fn=PadTHUCNewsSeqFn(tokenizer.pad_token_id))
+        self.optim = NoamOpt(self.config.embed_size, 0.1, self.config.lr_warmup, basic_optim)
+        self.criterion = nn.CrossEntropyLoss().to(self.device)
+        self.train_dataloader = DataLoader(train_dataset,
+                                           batch_size=args.batch_size,
+                                           collate_fn=PadTHUCNewsSeqFn(tokenizer.pad_token_id),
+                                           shuffle=True,
+                                           pin_memory=True)
+        self.val_dataloader = DataLoader(validation_dataset,
+                                         batch_size=args.batch_size,
+                                         collate_fn=PadTHUCNewsSeqFn(tokenizer.pad_token_id),
+                                         shuffle=True,
+                                         pin_memory=True)
 
         self.train_writer = SummaryWriter(splice_path(args.log_dir, 'train_cls'))
-        if valid_writer is None:
-            self.valid_writer = SummaryWriter(splice_path(args.log_dir, 'valid_cls'))
-        else:
-            self.valid_writer = valid_writer
+        self.valid_writer = SummaryWriter(splice_path(args.log_dir, 'valid_cls'))
 
     def _train(self, epoch):
         self.model.train()
         logger.info("Epoch: {}th".format(epoch))
         loss, acc, step_count = 0., 0., 0
-        total = len(self.train_loader)
+        total = len(self.train_dataloader)
 
-        tqdm_processor = tqdm(enumerate(self.train_loader),
+        tqdm_processor = tqdm(enumerate(self.train_dataloader),
                               desc='Train (epoch #{})'.format(epoch),
                               dynamic_ncols=True,
                               total=total)
@@ -82,7 +81,7 @@ class BertTrainer:
         with torch.no_grad():
             all_logits = []
             all_label = []
-            for batch_data in self.validation_loader:
+            for batch_data in self.val_dataloader:
                 text, label = batch_data['sent_token'].to(self.device), batch_data['label'].to(self.device)
                 attention_mask = batch_data['attention_mask'].to(self.device)
 

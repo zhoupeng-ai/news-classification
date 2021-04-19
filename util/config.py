@@ -84,4 +84,5 @@ class TrainConfig:
             self.lr_warmup = lr_warmup
             self.batch_split = batch_split
             self.weight_decay = weight_decay
-            self.num_labels = num_labels
+
+        self.num_labels = num_labels
