@@ -1,0 +1,13 @@
+2021-04-20 00:44:55,847 - root - INFO - reading data from ./data\train.txt
+2021-04-20 00:45:13,764 - root - INFO - 20000 data record loaded
+2021-04-20 00:45:13,768 - root - INFO - reading data from ./data\dev.txt
+2021-04-20 00:45:18,234 - root - INFO - 5000 data record loaded
+2021-04-20 00:45:19,383 - root - INFO - Training Start
+2021-04-20 00:45:19,383 - root - INFO - Training on epoch
+2021-04-20 00:45:19,384 - root - INFO - Epoch: 1th
+2021-04-20 00:46:09,569 - root - INFO - epoch   1, step 2, loss 2.2528, acc 0.2840
+2021-04-20 00:46:59,475 - root - INFO - epoch   1, step 4, loss 2.0508, acc 0.4098
+2021-04-20 00:47:50,011 - root - INFO - epoch   1, step 6, loss 2.0070, acc 0.4420
+2021-04-20 00:48:40,718 - root - INFO - epoch   1, step 8, loss 1.9406, acc 0.3896
+2021-04-20 00:49:31,426 - root - INFO - epoch   1, step 10, loss 1.6706, acc 0.5642
+2021-04-20 00:50:22,271 - root - INFO - epoch   1, step 12, loss 1.3887, acc 0.6696
