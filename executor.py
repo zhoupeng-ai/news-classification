@@ -14,12 +14,12 @@ class Executor:
                            after_epoch_funcs=[self.save_func],
                            after_step_funcs=[])
 
-    def save_func(self, epoch, device):
+    def save_func(self, epoch):
         filename = self.get_ckpt_filename('model', epoch)
         torch.save(self.trainer.state_dict(), splice_path(self.config.model_root_path, filename))
 
-    def get_epoch_from_ckpt(ckpt):
+    def get_epoch_from_ckpt(self, ckpt):
         return int(ckpt.split('-')[-1].split('.')[0])
 
-    def get_ckpt_filename(name, epoch):
+    def get_ckpt_filename(self, name, epoch):
         return '{}-{}.ckpt'.format(name, epoch)

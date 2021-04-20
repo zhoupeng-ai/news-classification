@@ -109,7 +109,7 @@ class BertTrainer:
             logger.info('Training on epoch'.format(epoch))
             self._train(epoch)
             for after_fn in after_epoch_funcs:
-                after_fn(epoch, self.device)
+                after_fn(epoch)
         logger.info('Training Stop')
 
     def state_dict(self):

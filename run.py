@@ -33,6 +33,6 @@ trainer = BertTrainer(args=train_config,
 
 executor = Executor(args=train_config,
                     trainer=trainer,
-                    start_epoch=0)
+                    start_epoch=1)
 
 executor.execute()
