@@ -1,7 +1,6 @@
 import torch
 from torch.utils.data import Dataset
 from util.common_util import (splice_path)
-import logging as logger
 
 
 def load_label_vocab(label_path):
@@ -15,7 +14,7 @@ class THUCNewsDataset(Dataset):
         THUCNews 新闻数据集的数据处理里类
     """
 
-    def __init__(self, args, path, tokenizer, max_lengths=200):
+    def __init__(self, args, path, tokenizer, logger):
         """
             args: 数据加载的基本参数
             path: 数据的源路径
@@ -27,13 +26,13 @@ class THUCNewsDataset(Dataset):
         super(THUCNewsDataset, self).__init__()
         self.tokenizer = tokenizer
         self.config = args
-        self.max_lengths = max_lengths
-        _, self.label_vocal, _ = load_label_vocab(splice_path(args.root, args.label_path))
-        self.path = splice_path(args.root, path)
+        self.logger = logger
+        _, self.label_vocal, _ = load_label_vocab(splice_path(args.data_root, args.label_path))
+        self.path = splice_path(args.data_root, path)
         self.data = THUCNewsDataset.data_processor(path=self.path,
                                                    tokenizer=tokenizer,
-                                                   label_vocal=self.label_vocal,
-                                                   max_length=self.max_lengths)
+                                                   max_length=self.config.max_length,
+                                                   logger = logger)
 
     def __len__(self):
         return len(self.data)
@@ -43,14 +42,12 @@ class THUCNewsDataset(Dataset):
         return {'label': label_vocab, 'sent_token': sent_token, 'attention_mask': attention_mask}
 
     @staticmethod
-    def data_processor(path, tokenizer, label_vocal, max_length):
+    def data_processor(path, tokenizer, max_length, logger):
         dataset = []
-        logger.info('reading data from {}'.format(path))
+        logger.info('Reading data from {}'.format(path))
         with open(path, 'r', encoding="utf-8") as file:
-            lines = [line.strip() for line in file.readlines() if len(line.strip()) != 0]
-            lines = [line.split(",") for line in lines]
-            for line in lines:
-                label, text = line[0], line[1]
+            lines = [line.strip().split(",", 1) for line in file.readlines() if len(line.strip()) != 0]
+            for label, text in lines:
                 sent_token = tokenizer(text[:max_length])
                 dataset.append([int(label)-1,
                                 sent_token['input_ids'],

@@ -5,18 +5,18 @@ from util.data.dataset import PadTHUCNewsSeqFn
 from util.common_util import (get_device, splice_path)
 from optim import Adam, NoamOpt
 from torch.utils.tensorboard import SummaryWriter
-import logging as logger
 from tqdm import tqdm
 
 
 class BertTrainer:
-    def __init__(self, args, model, tokenizer, train_dataset, validation_dataset, valid_writer=None):
+    def __init__(self, args, model, tokenizer, train_dataset, validation_dataset, logger, valid_writer=None):
         self.config = args
+        self.logger = logger
         self.device = get_device()
         self.model = model.to(self.device)
         self.criterion = nn.CrossEntropyLoss().to(self.device)
         basic_optim = Adam(self.model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
-        self.optim = NoamOpt(self.config.embed_size, 0.1, self.config.lr_warmup, basic_optim)
+        self.optim = NoamOpt(self.model.config.hidden_size, 0.1, self.config.lr_warmup, basic_optim)
         self.criterion = nn.CrossEntropyLoss().to(self.device)
         self.train_dataloader = DataLoader(train_dataset,
                                            batch_size=args.batch_size,
@@ -29,12 +29,12 @@ class BertTrainer:
                                          shuffle=True,
                                          pin_memory=True)
 
-        self.train_writer = SummaryWriter(splice_path(args.log_dir, 'train_cls'))
-        self.valid_writer = SummaryWriter(splice_path(args.log_dir, 'valid_cls'))
+        self.train_writer = SummaryWriter(splice_path(args.save_path, 'train_cls'))
+        self.valid_writer = SummaryWriter(splice_path(args.save_path, 'valid_cls'))
 
     def _train(self, epoch):
         self.model.train()
-        logger.info("Epoch: {}th".format(epoch))
+        self.logger.info("Epoch: {}th".format(epoch))
         loss, acc, step_count = 0., 0., 0
         total = len(self.train_dataloader)
 
@@ -100,17 +100,17 @@ class BertTrainer:
             log_str = 'epoch {:>3}, step {}'.format(epoch, curr_step)
             log_str += ', loss {:>4.4f}'.format(val_loss)
             log_str += ', acc {:>4.4f}'.format(val_acc)
-            logger.info(log_str)
+            self.logger.info(log_str)
         self.model.train()
 
     def train(self, start_epoch, epoch_size, after_epoch_funcs=[], after_step_funcs=[]):
-        logger.info('Training Start')
+        self.logger.info('Training Start')
         for epoch in range(start_epoch+1, epoch_size):
-            logger.info('Training on epoch'.format(epoch))
+            self.logger.info('Training on epoch'.format(epoch))
             self._train(epoch)
             for after_fn in after_epoch_funcs:
                 after_fn(epoch)
-        logger.info('Training Stop')
+        self.logger.info('Training Stop')
 
     def state_dict(self):
         return self.model.state_dict()

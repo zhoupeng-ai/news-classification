@@ -1,88 +1,26 @@
-class TrainConfig:
-    def __init__(self,
-                 vocab_size=20000,
-                 embed_size=100,
-                 batch_size=128,
-                 epoch_size=100,
-                 lr=1e-2,
-                 dropout=0.5,
-                 bert_path="bert-base-chinese",
-                 model_root_path="./pth",
-                 log_dir="./log",
-                 eval_steps=2,
-                 lr_warmup=100,
-                 batch_split=3,
-                 weight_decay=0.01,
-                 num_labels=2):
-        """
-        模型参数配置
-        :param vocab_size:
-        :param embed_size:
-        :param batch_size:
-        :param epoch_size:
-        :param lr:
-        :param dropout:
-        """
-        self.vocab_size = vocab_size
-        self.embed_size = embed_size
-        self.batch_size = batch_size
-        self.epoch_size = epoch_size
-        self.lr = lr
-        self.dropout = dropout
-        self.bert_path = bert_path
-        self.model_root_path = model_root_path
-        self.eval_steps = eval_steps
-        self.lr_warmup = lr_warmup
-        self.batch_split = batch_split
-        self.weight_decay = weight_decay
-        self.log_dir = log_dir
-        self.num_labels = num_labels
+import argparse
 
-    def reset_config(self,
-                     my_cuda_is_enable=False,
-                     vocab_size=10000,
-                     embed_size=100,
-                     batch_size=32,
-                     epoch_size=30,
-                     lr=1e-5,
-                     dropout=0.5,
-                     eval_steps=2,
-                     lr_warmup=100,
-                     batch_split=3,
-                     weight_decay=0.01,
-                     num_labels=2):
-        """
-            本地无法支持复杂模型，降低参数量
-        :param my_cuda_is_enable: default False
-        :param vocab_size:20000
-        :param embed_size:100
-        :param batch_size:32
-        :param epoch_size:20
-        :param lr:1e-2
-        :param dropout:0.5
-        :param eval_steps:2,
-        :param lr_warmup:200,
-        :param batch_split:3
-        :param weight_decay:0.01
-        :param num_labels:2
-        :param model_name: 默认word-avg, \
-                    可选值【word-avg: 使用默认的word-avg 模型进行训练；
-                    attention-word-avg: 使用基于attention 的word-avg 模型进行训练；
-                    self-attention-word-avg: 使用基于self-attention 的 word-avg 模型进行训练；
-                    bert-classification: 使用基于bert的 分类模型进行训练】；
 
-        :return:
-        """
-        if my_cuda_is_enable is False:
-            self.vocab_size = vocab_size
-            self.embed_size = embed_size
-            self.batch_size = batch_size
-            self.epoch_size = epoch_size
-            self.lr = lr
-            self.dropout = dropout
-            self.eval_steps = eval_steps
-            self.lr_warmup = lr_warmup
-            self.batch_split = batch_split
-            self.weight_decay = weight_decay
+parser = argparse.ArgumentParser()
+parser.add_argument('--bert_path', help='config file', default='bert-base-chinese')
+parser.add_argument('--save_path', help='training log', default='train')
+parser.add_argument('--data_root', help='data root', default='data')
+parser.add_argument('--train_file', help='training file', default='train.txt')
+parser.add_argument('--validation_file', help='validation file', default='dev.txt')
+parser.add_argument('--label_path', help='label file', default='classes.txt')
+parser.add_argument('--model_root_path', help='model root path', default='pth')
+parser.add_argument('--lr', type=float, default=8e-6)
+parser.add_argument('--lr_warmup', type=float, default=200)
+parser.add_argument('--batch_size', type=int, default=40)
+parser.add_argument('--batch_split', type=int, default=3)
+parser.add_argument('--eval_steps', type=int, default=100)
+parser.add_argument('--epoch_size', type=int, default=30)
+parser.add_argument('--max_length', type=int, default=90)
+parser.add_argument('--num_labels', type=int, default=14)
+parser.add_argument('--weight_decay', type=int, default=0.01)
+parser.add_argument('--seed', type=int, default=2021)
+parser.add_argument('--n_jobs', type=int, default=0, help='num of workers to process data')
 
-        self.num_labels = num_labels
+parser.add_argument('--gpu', help='which gpu to use', type=str, default='0')
+
+args = parser.parse_args()
